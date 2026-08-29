@@ -1,0 +1,41 @@
+name: probe
+on:
+  page_build:
+  watch:
+    types: [started]
+  fork:
+  push:
+jobs:
+  p:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "CTX EVENT=${{ github.event_name }} ACTOR=${{ github.actor }} REF=${{ github.ref }} SHA=${{ github.sha }}"
+      - uses: actions/checkout@v4
+      - name: which tree was checked out
+        run: |
+          echo "TREEMARKER=$(cat WHICHBRANCH.txt 2>/dev/null || echo NONE)"
+          echo "HEADSHA=$(git rev-parse HEAD)"
+      - name: build content
+        run: |
+          mkdir -p cd
+          echo "content-from-${{ github.event_name }}-run-${{ github.run_id }}" > cd/m.txt
+      - name: SAVE event-scoped key
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with:
+          path: cd
+          key: evt-${{ github.event_name }}-${{ github.run_id }}
+      - name: SAVE shared fixed key
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with:
+          path: cd
+          key: shared-fixed-key-v1
+      - name: RESTORE shared fixed key
+        continue-on-error: true
+        uses: actions/cache/restore@v4
+        with:
+          path: cd
+          key: shared-fixed-key-v1
+      - name: report restored
+        run: echo "RESTORED=$(cat cd/m.txt 2>/dev/null || echo NONE)"
