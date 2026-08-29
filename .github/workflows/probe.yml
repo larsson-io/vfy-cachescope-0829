@@ -6,6 +6,7 @@ on:
   fork:
   issues:
   discussion:
+  delete:
   push:
 jobs:
   p:
