@@ -6,6 +6,7 @@ on:
   fork:
   issues:
   discussion:
+  workflow_dispatch:
   delete:
   push:
 jobs:
