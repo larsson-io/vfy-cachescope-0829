@@ -1,0 +1,15 @@
+name: probe-ghp
+on:
+  push:
+jobs:
+  p:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "CTX EVENT=${{ github.event_name }} ACTOR=${{ github.actor }} REF=${{ github.ref }}"
+      - run: mkdir -p cd && echo "ghp-run-${{ github.run_id }}" > cd/m.txt
+      - name: SAVE from gh-pages push
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with:
+          path: cd
+          key: ghp-push-${{ github.run_id }}
